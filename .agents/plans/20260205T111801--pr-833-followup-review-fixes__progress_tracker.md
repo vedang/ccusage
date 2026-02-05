@@ -8,8 +8,8 @@
 | #   | Task                                                      | Status     | Notes                                                 |
 | --- | --------------------------------------------------------- | ---------- | ----------------------------------------------------- |
 | 1   | Align opencode cache token field names in command outputs | ✅ Done    | Updated daily/monthly/weekly/session JSON and tables. |
-| 2   | Use mergedOptions.jq for session JSON rendering           | ✅ Done    | Render paths now use mergedOptions.jq.               |
-| 3   | Update Codex test fixtures to valid model names           | ⏸️ Pending |                                                       |
+| 2   | Use mergedOptions.jq for session JSON rendering           | ✅ Done    | Render paths now use mergedOptions.jq.                |
+| 3   | Update Codex test fixtures to valid model names           | ✅ Done    | Swapped to Claude 4 model keys in report tests.       |
 | 4   | Compute pi daily totalTokens after loop                   | ⏸️ Pending |                                                       |
 | 5   | Extract/reuse pi empty totals helper (optional)           | ⏸️ Pending |                                                       |
 | 6   | Switch codex session table totals to totalCost            | ⏸️ Pending |                                                       |
