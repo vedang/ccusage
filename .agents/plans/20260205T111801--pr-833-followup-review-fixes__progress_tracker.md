@@ -12,8 +12,8 @@
 | 3   | Update Codex test fixtures to valid model names           | ✅ Done    | Swapped to Claude 4 model keys in report tests.       |
 | 4   | Compute pi daily totalTokens after loop                   | ⏸️ Pending |                                                       |
 | 5   | Extract/reuse pi empty totals helper (optional)           | ⏸️ Pending |                                                       |
-| 6   | Switch codex session table totals to totalCost            | ⏸️ Pending |                                                       |
-| 7   | Switch codex daily table totals to totalCost              | ⏸️ Pending |                                                       |
+| 6   | Switch codex session table totals to totalCost            | ✅ Done    | Totals now accumulate/display totalCost.            |
+| 7   | Switch codex daily table totals to totalCost              | ✅ Done    | Totals now accumulate/display totalCost.            |
 | 8   | Remove redundant cachedInputTokens in codex types         | ⏸️ Pending |                                                       |
 | 9   | Improve docstring coverage to >=80%                       | ⏸️ Pending |                                                       |
 | 10  | Run format/typecheck/test                                 | ⏸️ Pending |                                                       |
