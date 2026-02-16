@@ -1,5 +1,5 @@
 {
-	"name": "ccusage",
+	"name": "@unravel-tech/ccusage",
 	"type": "module",
 	"version": "18.0.5",
 	"description": "Usage analysis tool for Claude Code",
@@ -37,6 +37,7 @@
 		"bin": {
 			"ccusage": "./dist/index.js"
 		},
+        "access": "public",
 		"exports": {
 			".": "./dist/index.js",
 			"./calculate-cost": "./dist/calculate-cost.js",

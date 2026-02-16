@@ -1,5 +1,5 @@
 {
-	"name": "@ccusage/amp",
+	"name": "@unravel-tech/ccusage-amp",
 	"type": "module",
 	"version": "18.0.5",
 	"description": "Usage analysis tool for Amp CLI sessions",
@@ -26,7 +26,8 @@
 	"publishConfig": {
 		"bin": {
 			"ccusage-amp": "./dist/index.js"
-		}
+		},
+        "access": "public"
 	},
 	"engines": {
 		"node": ">=20.19.4"

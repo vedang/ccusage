@@ -1,5 +1,5 @@
 {
-	"name": "@ccusage/opencode",
+	"name": "@unravel-tech/ccusage-opencode",
 	"type": "module",
 	"version": "18.0.5",
 	"description": "Usage analysis tool for OpenCode sessions",
@@ -29,7 +29,8 @@
 	"publishConfig": {
 		"bin": {
 			"ccusage-opencode": "./dist/index.js"
-		}
+		},
+        "access": "public"
 	},
 	"engines": {
 		"node": ">=20.19.4"

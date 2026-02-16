@@ -1,5 +1,5 @@
 {
-	"name": "@ccusage/codex",
+	"name": "@unravel-tech/ccusage-codex",
 	"type": "module",
 	"version": "18.0.5",
 	"description": "Usage analysis tool for OpenAI Codex sessions",
@@ -26,7 +26,8 @@
 	"publishConfig": {
 		"bin": {
 			"ccusage-codex": "./dist/index.js"
-		}
+		},
+        "access": "public"
 	},
 	"engines": {
 		"node": ">=20.19.4"
