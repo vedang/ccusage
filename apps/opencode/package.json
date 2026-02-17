@@ -21,16 +21,16 @@
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"bin": {
-		"ccusage-opencode": "./src/index.ts"
+		"ccusage-opencode": "./dist/index.js"
 	},
 	"files": [
 		"dist"
 	],
 	"publishConfig": {
+		"access": "public",
 		"bin": {
 			"ccusage-opencode": "./dist/index.js"
-		},
-        "access": "public"
+		}
 	},
 	"engines": {
 		"node": ">=20.19.4"

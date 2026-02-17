@@ -18,16 +18,16 @@
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"bin": {
-		"ccusage-codex": "./src/index.ts"
+		"ccusage-codex": "./dist/index.js"
 	},
 	"files": [
 		"dist"
 	],
 	"publishConfig": {
+		"access": "public",
 		"bin": {
 			"ccusage-codex": "./dist/index.js"
-		},
-        "access": "public"
+		}
 	},
 	"engines": {
 		"node": ">=20.19.4"

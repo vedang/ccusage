@@ -16,28 +16,28 @@
 		"url": "https://github.com/ryoppippi/ccusage/issues"
 	},
 	"exports": {
-		".": "./src/index.ts",
-		"./calculate-cost": "./src/calculate-cost.ts",
-		"./data-loader": "./src/data-loader.ts",
-		"./debug": "./src/debug.ts",
-		"./logger": "./src/logger.ts",
+		".": "./dist/index.js",
+		"./calculate-cost": "./dist/calculate-cost.js",
+		"./data-loader": "./dist/data-loader.js",
+		"./debug": "./dist/debug.js",
+		"./logger": "./dist/logger.js",
 		"./package.json": "./package.json"
 	},
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"bin": {
-		"ccusage": "./src/index.ts"
+		"ccusage": "./dist/index.js"
 	},
 	"files": [
 		"config-schema.json",
 		"dist"
 	],
 	"publishConfig": {
+		"access": "public",
 		"bin": {
 			"ccusage": "./dist/index.js"
 		},
-        "access": "public",
 		"exports": {
 			".": "./dist/index.js",
 			"./calculate-cost": "./dist/calculate-cost.js",
