@@ -254,6 +254,69 @@ if (import.meta.vitest != null) {
 			expect(result?.totalTokens).toBe(180);
 		});
 
+		it('extracts usage from a single nested subagent toolResult entry', () => {
+			const data = {
+				type: 'message',
+				timestamp: '2024-01-01T00:00:00Z' as v.InferOutput<typeof isoTimestampSchema>,
+				message: {
+					role: 'assistant',
+					toolName: 'subagent',
+					details: {
+						results: [
+							{
+								usage: {
+									input: 12,
+									output: 4,
+									cacheRead: 1,
+									cacheWrite: 0,
+									totalTokens: 17,
+									cost: {
+										total: 0.03,
+									},
+								},
+							},
+						],
+					},
+				},
+			} as unknown as PiAgentMessage;
+
+			const result = transformPiAgentUsage(data);
+			expect(result).not.toBeNull();
+			expect(result).toMatchObject({
+				usage: {
+					input_tokens: 12,
+					output_tokens: 4,
+					cache_read_input_tokens: 1,
+					cache_creation_input_tokens: 0,
+				},
+				totalTokens: 17,
+				costUSD: 0.03,
+			});
+		});
+
+		it('returns null when nested subagent usage is malformed', () => {
+			const data = {
+				type: 'message',
+				timestamp: '2024-01-01T00:00:00Z' as v.InferOutput<typeof isoTimestampSchema>,
+				message: {
+					role: 'assistant',
+					toolName: 'subagent',
+					details: {
+						results: [
+							{
+								usage: {
+									input: 'bad',
+									output: 4,
+								},
+							},
+						],
+					},
+				},
+			} as unknown as PiAgentMessage;
+
+			expect(transformPiAgentUsage(data)).toBeNull();
+		});
+
 		it('calculates totalTokens when not provided', () => {
 			const data: PiAgentMessage = {
 				type: 'message',

@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import readline from 'node:readline';
+import { createFixture } from 'fs-fixture';
 import { glob } from 'tinyglobby';
 import * as v from 'valibot';
 import {
@@ -429,4 +430,326 @@ export async function loadPiAgentMonthlyData(
 	);
 
 	return results;
+}
+
+if (import.meta.vitest != null) {
+	describe('loadPiAgentData', () => {
+		it('extracts normal assistant usage and a single nested subagent usage', async () => {
+			await using fixture = await createFixture({
+				sessions: {
+					subagent: {
+						'session-1.jsonl': [
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-01T00:00:00.000Z',
+								message: {
+									role: 'assistant',
+									usage: {
+										input: 100,
+										output: 50,
+										cacheRead: 2,
+										cacheWrite: 3,
+										cost: {
+											total: 0.1,
+										},
+									},
+								},
+							}),
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-01T00:00:10.000Z',
+								message: {
+									role: 'assistant',
+									toolName: 'subagent',
+									details: {
+										results: [
+											{
+												usage: {
+													input: 12,
+													output: 3,
+													cacheRead: 1,
+													cacheWrite: 0,
+													totalTokens: 16,
+													cost: {
+														total: 0.03,
+													},
+												},
+											},
+										],
+									},
+								},
+							}),
+						].join('\n'),
+				},
+			},
+			});
+
+			const entries = await loadPiAgentData({
+				piPath: fixture.getPath('sessions'),
+			});
+
+			expect(entries).toHaveLength(2);
+			expect(entries[0]).toMatchObject({
+				project: 'subagent',
+				sessionId: 'session-1.jsonl',
+				timestamp: '2025-02-01T00:00:00.000Z',
+				inputTokens: 100,
+				outputTokens: 50,
+				cacheCreationTokens: 3,
+				cacheReadTokens: 2,
+				cost: 0.1,
+			});
+			expect(entries[1]).toMatchObject({
+				project: 'subagent',
+				sessionId: 'session-1.jsonl',
+				timestamp: '2025-02-01T00:00:10.000Z',
+				inputTokens: 12,
+				outputTokens: 3,
+				cacheCreationTokens: 0,
+				cacheReadTokens: 1,
+				cost: 0.03,
+			});
+		});
+
+		it('extracts all usage entries from multiple nested toolResult results, including equal token totals', async () => {
+			await using fixture = await createFixture({
+				sessions: {
+					subagent: {
+						'session-multi.jsonl': [
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-01T00:00:20.000Z',
+								message: {
+									role: 'assistant',
+									toolName: 'subagent',
+									details: {
+										results: [
+											{
+												usage: {
+													input: 5,
+													output: 1,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 6,
+													cost: {
+														total: 0.06,
+													},
+												},
+											},
+											{
+												usage: {
+													input: 5,
+													output: 1,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 6,
+													cost: {
+														total: 0.06,
+													},
+												},
+											},
+										],
+									},
+								},
+							}),
+						].join('\n'),
+				},
+			},
+			});
+
+			const entries = await loadPiAgentData({
+				piPath: fixture.getPath('sessions'),
+			});
+
+			expect(entries).toHaveLength(2);
+			expect(entries[0]).toMatchObject({
+				inputTokens: 5,
+				outputTokens: 1,
+				cacheCreationTokens: 0,
+				cacheReadTokens: 0,
+				cost: 0.06,
+			});
+			expect(entries[1]).toMatchObject({
+				inputTokens: 5,
+				outputTokens: 1,
+				cacheCreationTokens: 0,
+				cacheReadTokens: 0,
+				cost: 0.06,
+			});
+		});
+
+		it('skips malformed nested subagent usage while keeping valid usage', async () => {
+			await using fixture = await createFixture({
+				sessions: {
+					subagent: {
+						'session-malformed.jsonl': [
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-01T00:00:40.000Z',
+								message: {
+									role: 'assistant',
+									usage: {
+										input: 40,
+										output: 10,
+										cacheRead: 1,
+										cacheWrite: 4,
+										cost: {
+											total: 0.2,
+										},
+									},
+								},
+							}),
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-01T00:00:50.000Z',
+								message: {
+									role: 'assistant',
+									toolName: 'subagent',
+									details: {
+										results: [
+											{
+												usage: {
+													input: 3,
+													output: 1,
+													cacheRead: 0,
+													cacheWrite: 1,
+													totalTokens: 5,
+													cost: {
+														total: 0.01,
+													},
+												},
+											},
+											{
+												usage: {
+													input: 'bad',
+													output: 2,
+												},
+											},
+											{
+												foo: 'bar',
+											},
+											{
+												usage: {
+													input: 2,
+													output: 1,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 3,
+													cost: {
+														total: 0.02,
+													},
+												},
+											},
+										],
+									},
+								},
+							}),
+						].join('\n'),
+				},
+			},
+			});
+
+			const entries = await loadPiAgentData({
+				piPath: fixture.getPath('sessions'),
+			});
+
+			expect(entries).toHaveLength(3);
+			expect(entries[0]).toMatchObject({ inputTokens: 40, outputTokens: 10, cost: 0.2 });
+			expect(entries[1]).toMatchObject({ inputTokens: 3, outputTokens: 1, cost: 0.01 });
+			expect(entries[2]).toMatchObject({ inputTokens: 2, outputTokens: 1, cost: 0.02 });
+		});
+
+		it('deduplicates by stable line/result identity instead of total tokens', async () => {
+			await using fixture = await createFixture({
+				sessions: {
+					subagent: {
+						'session-dedupe.jsonl': [
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-01T00:01:00.000Z',
+								message: {
+									role: 'assistant',
+									usage: {
+										input: 9,
+										output: 0,
+										cacheRead: 0,
+										cacheWrite: 0,
+										cost: {
+											total: 0.01,
+										},
+									},
+								},
+							}),
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-01T00:01:00.000Z',
+								message: {
+									role: 'assistant',
+									usage: {
+										input: 9,
+										output: 0,
+										cacheRead: 0,
+										cacheWrite: 0,
+										cost: {
+											total: 0.01,
+										},
+									},
+								},
+							}),
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-01T00:01:00.000Z',
+								message: {
+									role: 'assistant',
+									toolName: 'subagent',
+									details: {
+										results: [
+											{
+												usage: {
+													input: 9,
+													output: 0,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 9,
+													cost: {
+														total: 0.01,
+													},
+												},
+											},
+											{
+												usage: {
+													input: 9,
+													output: 0,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 9,
+													cost: {
+														total: 0.01,
+													},
+												},
+											},
+										],
+									},
+								},
+							}),
+						].join('\n'),
+				},
+			},
+			});
+
+			const entries = await loadPiAgentData({
+				piPath: fixture.getPath('sessions'),
+			});
+
+			expect(entries).toHaveLength(4);
+			expect(
+				entries.map((entry) => entry.timestamp),
+			).toEqual([
+				'2025-02-01T00:01:00.000Z',
+				'2025-02-01T00:01:00.000Z',
+				'2025-02-01T00:01:00.000Z',
+				'2025-02-01T00:01:00.000Z',
+			]);
+		});
+	});
 }
