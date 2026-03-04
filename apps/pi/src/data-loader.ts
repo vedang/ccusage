@@ -521,6 +521,105 @@ if (import.meta.vitest != null) {
 			});
 		});
 
+		it('counts assistant and nested subagent usage when both appear in the same message line', async () => {
+			await using fixture = await createFixture({
+				sessions: {
+					subagent: {
+						'session-mixed.jsonl': [
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-01T00:00:20.000Z',
+								message: {
+									role: 'assistant',
+									model: 'parent-claude',
+									usage: {
+										input: 8,
+										output: 2,
+										cacheRead: 1,
+										cacheWrite: 1,
+										totalTokens: 12,
+										cost: {
+											total: 0.05,
+										},
+									},
+									toolName: 'subagent',
+									details: {
+										results: [
+											{
+												model: 'child-claude',
+												usage: {
+													input: 4,
+													output: 1,
+													cacheRead: 0,
+													cacheWrite: 0,
+													cost: {
+														total: 0.02,
+													},
+												},
+											},
+											{
+												usage: {
+													input: 3,
+													output: 2,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 6,
+													cost: {
+														total: 0.01,
+													},
+												},
+											},
+										],
+									},
+								},
+							}),
+						].join('\n'),
+					},
+				},
+			});
+
+			const entries = await loadPiAgentData({
+				piPath: fixture.getPath('sessions'),
+			});
+
+			expect(entries).toHaveLength(3);
+			expect(entries[0]).toMatchObject({
+				project: 'subagent',
+				sessionId: 'session-mixed',
+				timestamp: '2025-02-01T00:00:20.000Z',
+				inputTokens: 8,
+				outputTokens: 2,
+				cacheCreationTokens: 1,
+				cacheReadTokens: 1,
+				cost: 0.05,
+			});
+			expect(entries[1]).toMatchObject({
+				project: 'subagent',
+				sessionId: 'session-mixed',
+				timestamp: '2025-02-01T00:00:20.000Z',
+				model: '[pi-subagent] child-claude',
+				inputTokens: 4,
+				outputTokens: 1,
+				cacheCreationTokens: 0,
+				cacheReadTokens: 0,
+				cost: 0.02,
+			});
+			expect(entries[2]).toMatchObject({
+				project: 'subagent',
+				sessionId: 'session-mixed',
+				timestamp: '2025-02-01T00:00:20.000Z',
+				model: '[pi-subagent] parent-claude',
+				inputTokens: 3,
+				outputTokens: 2,
+				cacheCreationTokens: 0,
+				cacheReadTokens: 0,
+				cost: 0.01,
+			});
+			expect(entries.reduce((sum, entry) => sum + entry.inputTokens, 0)).toBe(15);
+			expect(entries.reduce((sum, entry) => sum + entry.outputTokens, 0)).toBe(5);
+			expect(entries.reduce((sum, entry) => sum + entry.cost, 0)).toBeCloseTo(0.08);
+		});
+
 		it('extracts all usage entries from multiple nested toolResult results, including equal token totals', async () => {
 			await using fixture = await createFixture({
 				sessions: {
