@@ -761,5 +761,219 @@ if (import.meta.vitest != null) {
 				'2025-02-01T00:01:00.000Z',
 			]);
 		});
+
+		it('labels nested subagent usage by source in aggregated model breakdown', async () => {
+			await using fixture = await createFixture({
+				sessions: {
+					subagent: {
+						'session-labeling.jsonl': [
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-02T00:00:00.000Z',
+								message: {
+									role: 'assistant',
+									model: 'parent-model',
+									usage: {
+										input: 10,
+										output: 2,
+										cacheRead: 0,
+										cacheWrite: 0,
+										cost: {
+											total: 0.1,
+										},
+									},
+								},
+							}),
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-02T00:01:00.000Z',
+								message: {
+									role: 'assistant',
+									toolName: 'subagent',
+									details: {
+										results: [
+											{
+												model: 'subagent-sonnet',
+												usage: {
+													input: 3,
+													output: 1,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 4,
+													cost: {
+														total: 0.02,
+												},
+											},
+										},
+										{
+											model: 'subagent-opus',
+											usage: {
+												input: 4,
+												output: 1,
+												cacheRead: 0,
+												cacheWrite: 0,
+												totalTokens: 5,
+												cost: {
+													total: 0.03,
+												},
+											},
+										},
+									],
+								},
+								},
+							}),
+						].join('\n'),
+					},
+				},
+			});
+
+			const daily = await loadPiAgentDailyData({
+				piPath: fixture.getPath('sessions'),
+			});
+			expect(daily).toHaveLength(1);
+			const entry = daily[0]!;
+
+			expect(entry.modelsUsed).toEqual([
+				'[pi] parent-model',
+				'[pi-subagent] subagent-sonnet',
+				'[pi-subagent] subagent-opus',
+			]);
+			expect(entry.modelBreakdowns).toMatchObject([
+				{
+					modelName: '[pi] parent-model',
+					inputTokens: 10,
+					outputTokens: 2,
+					cost: 0.1,
+				},
+				{
+					modelName: '[pi-subagent] subagent-sonnet',
+					inputTokens: 3,
+					outputTokens: 1,
+					cost: 0.02,
+				},
+				{
+					modelName: '[pi-subagent] subagent-opus',
+					inputTokens: 4,
+					outputTokens: 1,
+					cost: 0.03,
+				},
+			]);
+			expect(entry.inputTokens).toBe(17);
+			expect(entry.outputTokens).toBe(4);
+			expect(entry.totalCost).toBeCloseTo(0.15);
+		});
+
+		it('labels nested subagent usage by source in session and monthly breakdowns', async () => {
+			await using fixture = await createFixture({
+				sessions: {
+					subagent: {
+						'session-labeling.jsonl': [
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-03T00:00:00.000Z',
+								message: {
+									role: 'assistant',
+									model: 'parent-model',
+									usage: {
+										input: 10,
+										output: 2,
+										cacheRead: 0,
+										cacheWrite: 0,
+										cost: {
+											total: 0.1,
+										},
+									},
+								},
+							}),
+							JSON.stringify({
+								type: 'message',
+								timestamp: '2025-02-03T00:01:00.000Z',
+								message: {
+									role: 'assistant',
+									toolName: 'subagent',
+									details: {
+										results: [
+											{
+												model: 'subagent-sonnet',
+												usage: {
+													input: 3,
+													output: 1,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 4,
+													cost: {
+														total: 0.02,
+												},
+											},
+										},
+										{
+											model: 'subagent-opus',
+											usage: {
+												input: 4,
+												output: 1,
+												cacheRead: 0,
+												cacheWrite: 0,
+												totalTokens: 5,
+												cost: {
+													total: 0.03,
+												},
+											},
+										},
+									],
+									},
+								},
+							}),
+						].join('\n'),
+					},
+				},
+			});
+
+			const sessions = await loadPiAgentSessionData({
+				piPath: fixture.getPath('sessions'),
+			});
+			expect(sessions).toHaveLength(1);
+			const session = sessions[0]!;
+			expect(session.modelsUsed).toEqual([
+				'[pi] parent-model',
+				'[pi-subagent] subagent-sonnet',
+				'[pi-subagent] subagent-opus',
+			]);
+			expect(session.modelBreakdowns).toMatchObject([
+				{
+					modelName: '[pi] parent-model',
+					inputTokens: 10,
+					outputTokens: 2,
+					cost: 0.1,
+				},
+				{
+					modelName: '[pi-subagent] subagent-sonnet',
+					inputTokens: 3,
+					outputTokens: 1,
+					cost: 0.02,
+				},
+				{
+					modelName: '[pi-subagent] subagent-opus',
+					inputTokens: 4,
+					outputTokens: 1,
+					cost: 0.03,
+				},
+			]);
+			expect(session.inputTokens).toBe(17);
+			expect(session.outputTokens).toBe(4);
+			expect(session.totalCost).toBeCloseTo(0.15);
+
+			const monthly = await loadPiAgentMonthlyData({
+				piPath: fixture.getPath('sessions'),
+			});
+			expect(monthly).toHaveLength(1);
+			const monthlyEntry = monthly[0]!;
+			expect(monthlyEntry.month).toBe('2025-02');
+			expect(monthlyEntry.modelsUsed).toEqual([
+				'[pi] parent-model',
+				'[pi-subagent] subagent-sonnet',
+				'[pi-subagent] subagent-opus',
+			]);
+			expect(monthlyEntry.totalCost).toBeCloseTo(0.15);
+		});
 	});
 }

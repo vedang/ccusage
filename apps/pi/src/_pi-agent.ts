@@ -69,7 +69,17 @@ type PiAgentUsageEntry = {
 	totalTokens: number;
 };
 
-function createUsageEntry(usage: PiAgentUsage, model: string | undefined): PiAgentUsageEntry {
+type PiAgentUsageSource = 'assistant' | 'subagent';
+
+function createModelName(model: string, usageSource: PiAgentUsageSource): string {
+	return usageSource === 'subagent' ? `[pi-subagent] ${model}` : `[pi] ${model}`;
+}
+
+function createUsageEntry(
+	usage: PiAgentUsage,
+	model: string | undefined,
+	usageSource: PiAgentUsageSource = 'assistant',
+): PiAgentUsageEntry {
 	const totalTokens =
 		usage.totalTokens ??
 		usage.input + usage.output + (usage.cacheRead ?? 0) + (usage.cacheWrite ?? 0);
@@ -81,7 +91,7 @@ function createUsageEntry(usage: PiAgentUsage, model: string | undefined): PiAge
 			cache_creation_input_tokens: usage.cacheWrite ?? 0,
 			cache_read_input_tokens: usage.cacheRead ?? 0,
 		},
-		model: model != null ? `[pi] ${model}` : undefined,
+		model: model != null ? createModelName(model, usageSource) : undefined,
 		costUSD: usage.cost?.total,
 		totalTokens,
 	};
@@ -141,7 +151,9 @@ export function extractPiAgentSubagentUsageEntries(data: PiAgentMessage): PiAgen
 			cost: normalizedCost,
 		};
 
-		entries.push(createUsageEntry(normalizedUsage, result.model ?? data.message?.model));
+		entries.push(
+			createUsageEntry(normalizedUsage, result.model ?? data.message?.model, 'subagent'),
+		);
 	}
 
 	return entries;
@@ -341,6 +353,7 @@ if (import.meta.vitest != null) {
 					details: {
 						results: [
 							{
+								model: 'claude-opus-4-5',
 								usage: {
 									input: 12,
 									output: 4,
@@ -360,6 +373,7 @@ if (import.meta.vitest != null) {
 			const result = transformPiAgentUsage(data);
 			expect(result).not.toBeNull();
 			expect(result).toMatchObject({
+				model: '[pi-subagent] claude-opus-4-5',
 				usage: {
 					input_tokens: 12,
 					output_tokens: 4,
@@ -369,6 +383,34 @@ if (import.meta.vitest != null) {
 				totalTokens: 17,
 				costUSD: 0.03,
 			});
+		});
+
+		it('falls back to parent model when subagent result model is missing', () => {
+			const data = {
+				type: 'message',
+				timestamp: '2024-01-01T00:00:00Z' as v.InferOutput<typeof isoTimestampSchema>,
+				message: {
+					role: 'assistant',
+					model: 'parent-claude-4',
+					toolName: 'subagent',
+					details: {
+						results: [
+							{
+								usage: {
+									input: 3,
+									output: 1,
+									cacheRead: 0,
+									cacheWrite: 0,
+									totalTokens: 4,
+								},
+							},
+						],
+					},
+				},
+			} as unknown as PiAgentMessage;
+
+			const result = transformPiAgentUsage(data);
+			expect(result?.model).toBe('[pi-subagent] parent-claude-4');
 		});
 
 		it('returns null when nested subagent usage is malformed', () => {
