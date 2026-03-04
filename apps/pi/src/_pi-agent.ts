@@ -71,8 +71,13 @@ type PiAgentUsageEntry = {
 
 type PiAgentUsageSource = 'assistant' | 'subagent';
 
+const TOP_LEVEL_MODEL_PREFIX = '[pi]';
+const SUBAGENT_MODEL_PREFIX = '[pi-subagent]';
+
 function createModelName(model: string, usageSource: PiAgentUsageSource): string {
-	return usageSource === 'subagent' ? `[pi-subagent] ${model}` : `[pi] ${model}`;
+	return usageSource === 'subagent'
+		? `${SUBAGENT_MODEL_PREFIX} ${model}`
+		: `${TOP_LEVEL_MODEL_PREFIX} ${model}`;
 }
 
 function createUsageEntry(
