@@ -75,6 +75,7 @@ Useful environment variables:
 
 - 📊 **Daily/Monthly/Session Reports**: Same reporting options as ccusage
 - 💵 **Accurate Cost Calculation**: Uses LiteLLM pricing database
+- 🧠 **Subagent-aware accounting**: Usage totals include both top-level assistant usage and nested subagent usage from `message.details.results[].usage` where `message.toolName == "subagent"`
 - 📄 **JSON Output**: Export data in structured JSON format with `--json`
 - 📱 **Compact Mode**: Use `--compact` flag for narrow terminals
 
