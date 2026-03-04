@@ -833,6 +833,7 @@ if (import.meta.vitest != null) {
 			expect(daily).toHaveLength(1);
 			const entry = daily[0]!;
 
+			expect(entry.source).toBe('pi-agent');
 			expect(entry.modelsUsed).toEqual([
 				'[pi] parent-model',
 				'[pi-subagent] subagent-sonnet',
@@ -933,6 +934,7 @@ if (import.meta.vitest != null) {
 			});
 			expect(sessions).toHaveLength(1);
 			const session = sessions[0]!;
+			expect(session.source).toBe('pi-agent');
 			expect(session.modelsUsed).toEqual([
 				'[pi] parent-model',
 				'[pi-subagent] subagent-sonnet',
@@ -967,6 +969,7 @@ if (import.meta.vitest != null) {
 			});
 			expect(monthly).toHaveLength(1);
 			const monthlyEntry = monthly[0]!;
+			expect(monthlyEntry.source).toBe('pi-agent');
 			expect(monthlyEntry.month).toBe('2025-02');
 			expect(monthlyEntry.modelsUsed).toEqual([
 				'[pi] parent-model',
