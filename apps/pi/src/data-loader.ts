@@ -6,7 +6,9 @@ import * as v from 'valibot';
 import {
 	extractPiAgentProject,
 	extractPiAgentSessionId,
+	extractPiAgentSubagentUsageEntries,
 	getPiAgentPaths,
+	isPiAgentUsageEntry,
 	piAgentMessageSchema,
 	transformPiAgentUsage,
 } from './_pi-agent.ts';
@@ -82,7 +84,7 @@ export type MonthlyUsageWithSource = {
 
 async function processJSONLFileByLine(
 	filePath: string,
-	processor: (line: string) => Promise<void> | void,
+	processor: (line: string, lineIndex: number) => Promise<void> | void,
 ): Promise<void> {
 	const fileStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
 	const rl = readline.createInterface({
@@ -90,11 +92,13 @@ async function processJSONLFileByLine(
 		crlfDelay: Infinity,
 	});
 
+	let lineIndex = 0;
 	for await (const line of rl) {
 		const trimmedLine = line.trim();
 		if (trimmedLine !== '') {
-			await processor(trimmedLine);
+			await processor(trimmedLine, lineIndex);
 		}
+		lineIndex += 1;
 	}
 }
 
@@ -168,7 +172,7 @@ export async function loadPiAgentData(options?: LoadOptions): Promise<EntryData[
 		const project = extractPiAgentProject(file);
 		const sessionId = extractPiAgentSessionId(file);
 
-		await processJSONLFileByLine(file, (line) => {
+		await processJSONLFileByLine(file, (line, lineIndex) => {
 			try {
 				const parsed = JSON.parse(line) as unknown;
 				const result = v.safeParse(piAgentMessageSchema, parsed);
@@ -177,28 +181,34 @@ export async function loadPiAgentData(options?: LoadOptions): Promise<EntryData[
 				}
 
 				const data = result.output;
-				const transformed = transformPiAgentUsage(data);
-				if (transformed == null) {
-					return;
-				}
+				const usageEntries = [
+					...(isPiAgentUsageEntry(data) ? [transformPiAgentUsage(data)] : []),
+					...extractPiAgentSubagentUsageEntries(data),
+				].filter((entry) => entry != null);
 
-				const hash = `pi:${data.timestamp}:${transformed.totalTokens}`;
-				if (processedHashes.has(hash)) {
-					return;
-				}
-				processedHashes.add(hash);
+				for (const [resultIndex, transformed] of usageEntries.entries()) {
+					if (transformed == null) {
+						continue;
+					}
 
-				entries.push({
-					timestamp: data.timestamp,
-					model: transformed.model,
-					inputTokens: transformed.usage.input_tokens,
-					outputTokens: transformed.usage.output_tokens,
-					cacheCreationTokens: transformed.usage.cache_creation_input_tokens,
-					cacheReadTokens: transformed.usage.cache_read_input_tokens,
-					cost: transformed.costUSD ?? 0,
-					project,
-					sessionId,
-				});
+					const hash = `pi:${file}:${lineIndex}:${resultIndex}`;
+					if (processedHashes.has(hash)) {
+						continue;
+					}
+					processedHashes.add(hash);
+
+					entries.push({
+						timestamp: data.timestamp,
+						model: transformed.model,
+						inputTokens: transformed.usage.input_tokens,
+						outputTokens: transformed.usage.output_tokens,
+						cacheCreationTokens: transformed.usage.cache_creation_input_tokens,
+						cacheReadTokens: transformed.usage.cache_read_input_tokens,
+						cost: transformed.costUSD ?? 0,
+						project,
+						sessionId,
+					});
+				}
 			} catch {
 				// Skip invalid lines
 			}
@@ -491,7 +501,7 @@ if (import.meta.vitest != null) {
 			expect(entries).toHaveLength(2);
 			expect(entries[0]).toMatchObject({
 				project: 'subagent',
-				sessionId: 'session-1.jsonl',
+				sessionId: 'session-1',
 				timestamp: '2025-02-01T00:00:00.000Z',
 				inputTokens: 100,
 				outputTokens: 50,
@@ -501,7 +511,7 @@ if (import.meta.vitest != null) {
 			});
 			expect(entries[1]).toMatchObject({
 				project: 'subagent',
-				sessionId: 'session-1.jsonl',
+				sessionId: 'session-1',
 				timestamp: '2025-02-01T00:00:10.000Z',
 				inputTokens: 12,
 				outputTokens: 3,

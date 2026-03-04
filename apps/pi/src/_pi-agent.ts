@@ -23,6 +23,11 @@ const piAgentUsageSchema = v.object({
 	),
 });
 
+const piAgentSubagentResultSchema = v.object({
+	usage: v.optional(v.record(v.string(), v.unknown())),
+	model: v.optional(v.string()),
+});
+
 export const piAgentMessageSchema = v.object({
 	type: v.optional(v.string()),
 	timestamp: isoTimestampSchema,
@@ -30,10 +35,57 @@ export const piAgentMessageSchema = v.object({
 		role: v.optional(v.string()),
 		model: v.optional(v.string()),
 		usage: v.optional(piAgentUsageSchema),
+		toolName: v.optional(v.string()),
+		details: v.optional(
+			v.object({
+				results: v.optional(v.array(piAgentSubagentResultSchema)),
+			}),
+		),
 	}),
 });
 
 export type PiAgentMessage = v.InferOutput<typeof piAgentMessageSchema>;
+
+type PiAgentUsage = {
+	input: number;
+	output: number;
+	cacheRead?: number;
+	cacheWrite?: number;
+	totalTokens?: number;
+	cost?: {
+		total?: number;
+	};
+};
+
+type PiAgentUsageEntry = {
+	usage: {
+		input_tokens: number;
+		output_tokens: number;
+		cache_creation_input_tokens: number;
+		cache_read_input_tokens: number;
+	};
+	model: string | undefined;
+	costUSD: number | undefined;
+	totalTokens: number;
+};
+
+function createUsageEntry(usage: PiAgentUsage, model: string | undefined): PiAgentUsageEntry {
+	const totalTokens =
+		usage.totalTokens ??
+		usage.input + usage.output + (usage.cacheRead ?? 0) + (usage.cacheWrite ?? 0);
+
+	return {
+		usage: {
+			input_tokens: usage.input,
+			output_tokens: usage.output,
+			cache_creation_input_tokens: usage.cacheWrite ?? 0,
+			cache_read_input_tokens: usage.cacheRead ?? 0,
+		},
+		model: model != null ? `[pi] ${model}` : undefined,
+		costUSD: usage.cost?.total,
+		totalTokens,
+	};
+}
 
 export function isPiAgentUsageEntry(data: PiAgentMessage): boolean {
 	const isMessage = data.type == null || data.type === 'message';
@@ -44,6 +96,63 @@ export function isPiAgentUsageEntry(data: PiAgentMessage): boolean {
 		typeof data.message.usage.input === 'number' &&
 		typeof data.message.usage.output === 'number'
 	);
+}
+
+export function extractPiAgentSubagentUsageEntries(data: PiAgentMessage): PiAgentUsageEntry[] {
+	const toolResults = data.message?.details?.results;
+	if (data.message?.toolName !== 'subagent' || !Array.isArray(toolResults)) {
+		return [];
+	}
+
+	const entries: PiAgentUsageEntry[] = [];
+	for (const result of toolResults) {
+		const usage = result?.usage;
+		if (usage == null || typeof usage !== 'object' || Array.isArray(usage)) {
+			continue;
+		}
+
+		const usageRecord = usage as Record<string, unknown>;
+		const input = usageRecord.input;
+		const output = usageRecord.output;
+		if (typeof input !== 'number' || typeof output !== 'number') {
+			continue;
+		}
+
+		const cacheRead = usageRecord.cacheRead;
+		const cacheWrite = usageRecord.cacheWrite;
+		const totalTokens = usageRecord.totalTokens;
+		const rawCost = usageRecord.cost;
+		let normalizedCost: { total?: number } | undefined;
+		if (rawCost != null && typeof rawCost === 'object' && !Array.isArray(rawCost)) {
+			const rawCostRecord = rawCost as Record<string, unknown>;
+			if (typeof rawCostRecord.total === 'number') {
+				normalizedCost = {
+					total: rawCostRecord.total,
+				};
+			}
+		}
+
+		const normalizedUsage: PiAgentUsage = {
+			input,
+			output,
+			cacheRead: typeof cacheRead === 'number' ? cacheRead : undefined,
+			cacheWrite: typeof cacheWrite === 'number' ? cacheWrite : undefined,
+			totalTokens: typeof totalTokens === 'number' ? totalTokens : undefined,
+			cost: normalizedCost,
+		};
+
+		entries.push(createUsageEntry(normalizedUsage, result.model ?? data.message?.model));
+	}
+
+	return entries;
+}
+
+export function transformPiAgentUsage(data: PiAgentMessage): PiAgentUsageEntry | null {
+	if (isPiAgentUsageEntry(data)) {
+		return createUsageEntry(data.message.usage!, data.message?.model);
+	}
+
+	return extractPiAgentSubagentUsageEntries(data)[0] ?? null;
 }
 
 export function extractPiAgentSessionId(filePath: string): string {
@@ -86,38 +195,6 @@ export function getPiAgentPaths(customPath?: string): string[] {
 	return [];
 }
 
-export function transformPiAgentUsage(data: PiAgentMessage): {
-	usage: {
-		input_tokens: number;
-		output_tokens: number;
-		cache_creation_input_tokens: number;
-		cache_read_input_tokens: number;
-	};
-	model: string | undefined;
-	costUSD: number | undefined;
-	totalTokens: number;
-} | null {
-	if (!isPiAgentUsageEntry(data)) {
-		return null;
-	}
-
-	const usage = data.message.usage!;
-	const totalTokens =
-		usage.totalTokens ??
-		usage.input + usage.output + (usage.cacheRead ?? 0) + (usage.cacheWrite ?? 0);
-
-	return {
-		usage: {
-			input_tokens: usage.input,
-			output_tokens: usage.output,
-			cache_creation_input_tokens: usage.cacheWrite ?? 0,
-			cache_read_input_tokens: usage.cacheRead ?? 0,
-		},
-		model: data.message.model != null ? `[pi] ${data.message.model}` : undefined,
-		costUSD: usage.cost?.total,
-		totalTokens,
-	};
-}
 
 if (import.meta.vitest != null) {
 	describe('isPiAgentUsageEntry', () => {
