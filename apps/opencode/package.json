@@ -27,10 +27,10 @@
 		"dist"
 	],
 	"publishConfig": {
+		"access": "public",
 		"bin": {
 			"ccusage-opencode": "./dist/index.js"
-		},
-        "access": "public"
+		}
 	},
 	"engines": {
 		"node": ">=20.19.4"

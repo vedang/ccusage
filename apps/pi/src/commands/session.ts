@@ -12,15 +12,15 @@ import { define } from 'gunshi';
 import { loadPiAgentSessionData } from '../data-loader.ts';
 import { log, logger } from '../logger.ts';
 
-function createEmptyTotals () {
-  return {
-	inputTokens: 0,
-	outputTokens: 0,
-	cacheCreationTokens: 0,
-	cacheReadTokens: 0,
-	totalTokens: 0,
-	totalCost: 0,
-}
+function createEmptyTotals() {
+	return {
+		inputTokens: 0,
+		outputTokens: 0,
+		cacheCreationTokens: 0,
+		cacheReadTokens: 0,
+		totalTokens: 0,
+		totalCost: 0,
+	};
 }
 
 export const sessionCommand = define({

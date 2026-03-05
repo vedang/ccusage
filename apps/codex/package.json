@@ -24,10 +24,10 @@
 		"dist"
 	],
 	"publishConfig": {
+		"access": "public",
 		"bin": {
 			"ccusage-codex": "./dist/index.js"
-		},
-        "access": "public"
+		}
 	},
 	"engines": {
 		"node": ">=20.19.4"

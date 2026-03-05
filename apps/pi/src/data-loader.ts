@@ -490,8 +490,8 @@ if (import.meta.vitest != null) {
 								},
 							}),
 						].join('\n'),
+					},
 				},
-			},
 			});
 
 			const entries = await loadPiAgentData({
@@ -662,8 +662,8 @@ if (import.meta.vitest != null) {
 								},
 							}),
 						].join('\n'),
+					},
 				},
-			},
 			});
 
 			const entries = await loadPiAgentData({
@@ -754,8 +754,8 @@ if (import.meta.vitest != null) {
 								},
 							}),
 						].join('\n'),
+					},
 				},
-			},
 			});
 
 			const entries = await loadPiAgentData({
@@ -842,8 +842,8 @@ if (import.meta.vitest != null) {
 								},
 							}),
 						].join('\n'),
+					},
 				},
-			},
 			});
 
 			const entries = await loadPiAgentData({
@@ -851,9 +851,7 @@ if (import.meta.vitest != null) {
 			});
 
 			expect(entries).toHaveLength(4);
-			expect(
-				entries.map((entry) => entry.timestamp),
-			).toEqual([
+			expect(entries.map((entry) => entry.timestamp)).toEqual([
 				'2025-02-01T00:01:00.000Z',
 				'2025-02-01T00:01:00.000Z',
 				'2025-02-01T00:01:00.000Z',
@@ -901,24 +899,24 @@ if (import.meta.vitest != null) {
 													totalTokens: 4,
 													cost: {
 														total: 0.02,
+													},
 												},
 											},
-										},
-										{
-											model: 'subagent-opus',
-											usage: {
-												input: 4,
-												output: 1,
-												cacheRead: 0,
-												cacheWrite: 0,
-												totalTokens: 5,
-												cost: {
-													total: 0.03,
+											{
+												model: 'subagent-opus',
+												usage: {
+													input: 4,
+													output: 1,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 5,
+													cost: {
+														total: 0.03,
+													},
 												},
 											},
-										},
-									],
-								},
+										],
+									},
 								},
 							}),
 						].join('\n'),
@@ -1003,23 +1001,23 @@ if (import.meta.vitest != null) {
 													totalTokens: 4,
 													cost: {
 														total: 0.02,
+													},
 												},
 											},
-										},
-										{
-											model: 'subagent-opus',
-											usage: {
-												input: 4,
-												output: 1,
-												cacheRead: 0,
-												cacheWrite: 0,
-												totalTokens: 5,
-												cost: {
-													total: 0.03,
+											{
+												model: 'subagent-opus',
+												usage: {
+													input: 4,
+													output: 1,
+													cacheRead: 0,
+													cacheWrite: 0,
+													totalTokens: 5,
+													cost: {
+														total: 0.03,
+													},
 												},
 											},
-										},
-									],
+										],
 									},
 								},
 							}),

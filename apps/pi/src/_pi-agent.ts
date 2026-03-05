@@ -212,7 +212,6 @@ export function getPiAgentPaths(customPath?: string): string[] {
 	return [];
 }
 
-
 if (import.meta.vitest != null) {
 	describe('isPiAgentUsageEntry', () => {
 		it('returns true for valid assistant message with usage', () => {

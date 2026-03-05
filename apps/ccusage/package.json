@@ -34,10 +34,10 @@
 		"dist"
 	],
 	"publishConfig": {
+		"access": "public",
 		"bin": {
 			"ccusage": "./dist/index.js"
 		},
-        "access": "public",
 		"exports": {
 			".": "./dist/index.js",
 			"./calculate-cost": "./dist/calculate-cost.js",
