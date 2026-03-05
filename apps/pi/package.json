@@ -1,7 +1,7 @@
 {
 	"name": "@unravel-tech/ccusage-pi",
 	"type": "module",
-	"version": "18.0.8",
+	"version": "18.2.0",
 	"description": "Pi-agent usage tracking - unified Claude Max usage across Claude Code and pi-agent",
 	"author": "ryoppippi",
 	"contributors": [
@@ -33,10 +33,10 @@
 		"dist"
 	],
 	"publishConfig": {
+		"access": "public",
 		"bin": {
 			"ccusage-pi": "./dist/index.js"
 		},
-        "access": "public",
 		"exports": {
 			".": "./dist/index.js",
 			"./package.json": "./package.json"
