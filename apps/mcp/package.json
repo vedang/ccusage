@@ -2,6 +2,7 @@
   "name": "@ccusage/mcp",
   "type": "module",
   "version": "18.2.1",
+  "private": true,
   "description": "MCP server implementation for ccusage data",
   "author": "ryoppippi",
   "license": "MIT",
