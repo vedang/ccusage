@@ -30,15 +30,6 @@
     "README.md",
     "dist"
   ],
-  "publishConfig": {
-    "bin": {
-      "ccusage-mcp": "./dist/index.js"
-    },
-    "exports": {
-      ".": "./dist/index.js",
-      "./package.json": "./package.json"
-    }
-  },
   "engines": {
     "node": ">=20.19.4"
   },
