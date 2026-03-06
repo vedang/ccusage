@@ -1,47 +1,47 @@
 {
-  "name": "@ccusage/mcp",
-  "type": "module",
-  "version": "18.2.1",
-  "private": true,
-  "description": "MCP server implementation for ccusage data",
-  "author": "ryoppippi",
-  "license": "MIT",
-  "funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
-  "homepage": "https://github.com/ryoppippi/ccusage#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ryoppippi/ccusage.git",
-    "directory": "apps/mcp"
-  },
-  "bugs": {
-    "url": "https://github.com/ryoppippi/ccusage/issues"
-  },
-  "exports": {
-    ".": "./src/index.ts",
-    "./package.json": "./package.json"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "ccusage-mcp": "./src/index.ts"
-  },
-  "files": [
-    "README.md",
-    "dist"
-  ],
-  "engines": {
-    "node": ">=20.19.4"
-  },
-  "dependencies": {
-    "@ccusage/codex": "workspace:*",
-    "@hono/mcp": "catalog:runtime",
-    "@hono/node-server": "catalog:runtime",
-    "@modelcontextprotocol/sdk": "catalog:runtime",
-    "ccusage": "workspace:*",
-    "gunshi": "catalog:runtime",
-    "hono": "catalog:runtime",
-    "nano-spawn": "catalog:runtime",
-    "zod": "catalog:runtime"
-  }
+	"name": "@ccusage/mcp",
+	"version": "18.2.2",
+	"private": true,
+	"description": "MCP server implementation for ccusage data",
+	"homepage": "https://github.com/ryoppippi/ccusage#readme",
+	"bugs": {
+		"url": "https://github.com/ryoppippi/ccusage/issues"
+	},
+	"license": "MIT",
+	"author": "ryoppippi",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ryoppippi/ccusage.git",
+		"directory": "apps/mcp"
+	},
+	"funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
+	"bin": {
+		"ccusage-mcp": "./src/index.ts"
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./package.json": "./package.json"
+	},
+	"dependencies": {
+		"@ccusage/codex": "workspace:*",
+		"@hono/mcp": "catalog:runtime",
+		"@hono/node-server": "catalog:runtime",
+		"@modelcontextprotocol/sdk": "catalog:runtime",
+		"ccusage": "workspace:*",
+		"gunshi": "catalog:runtime",
+		"hono": "catalog:runtime",
+		"nano-spawn": "catalog:runtime",
+		"zod": "catalog:runtime"
+	},
+	"engines": {
+		"node": ">=20.19.4"
+	}
 }

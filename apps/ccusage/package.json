@@ -1,53 +1,53 @@
 {
-  "name": "@unravel-tech/ccusage",
-  "type": "module",
-  "version": "18.2.1",
-  "description": "Usage analysis tool for Claude Code",
-  "author": "ryoppippi",
-  "license": "MIT",
-  "funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
-  "homepage": "https://github.com/ryoppippi/ccusage#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ryoppippi/ccusage.git",
-    "directory": "apps/ccusage"
-  },
-  "bugs": {
-    "url": "https://github.com/ryoppippi/ccusage/issues"
-  },
-  "exports": {
-    ".": "./src/index.ts",
-    "./calculate-cost": "./src/calculate-cost.ts",
-    "./data-loader": "./src/data-loader.ts",
-    "./debug": "./src/debug.ts",
-    "./logger": "./src/logger.ts",
-    "./package.json": "./package.json"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "ccusage": "./src/index.ts"
-  },
-  "files": [
-    "config-schema.json",
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public",
-    "bin": {
-      "ccusage": "./dist/index.js"
-    },
-    "exports": {
-      ".": "./dist/index.js",
-      "./calculate-cost": "./dist/calculate-cost.js",
-      "./data-loader": "./dist/data-loader.js",
-      "./debug": "./dist/debug.js",
-      "./logger": "./dist/logger.js",
-      "./package.json": "./package.json"
-    }
-  },
-  "engines": {
-    "node": ">=20.19.4"
-  }
+	"name": "@unravel-tech/ccusage",
+	"version": "18.2.2",
+	"description": "Usage analysis tool for Claude Code",
+	"homepage": "https://github.com/ryoppippi/ccusage#readme",
+	"bugs": {
+		"url": "https://github.com/ryoppippi/ccusage/issues"
+	},
+	"license": "MIT",
+	"author": "ryoppippi",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ryoppippi/ccusage.git",
+		"directory": "apps/ccusage"
+	},
+	"funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
+	"bin": {
+		"ccusage": "./src/index.ts"
+	},
+	"files": [
+		"config-schema.json",
+		"dist"
+	],
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./calculate-cost": "./src/calculate-cost.ts",
+		"./data-loader": "./src/data-loader.ts",
+		"./debug": "./src/debug.ts",
+		"./logger": "./src/logger.ts",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"access": "public",
+		"bin": {
+			"ccusage": "./dist/index.js"
+		},
+		"exports": {
+			".": "./dist/index.js",
+			"./calculate-cost": "./dist/calculate-cost.js",
+			"./data-loader": "./dist/data-loader.js",
+			"./debug": "./dist/debug.js",
+			"./logger": "./dist/logger.js",
+			"./package.json": "./package.json"
+		}
+	},
+	"engines": {
+		"node": ">=20.19.4"
+	}
 }

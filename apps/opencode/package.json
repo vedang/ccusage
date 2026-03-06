@@ -1,38 +1,38 @@
 {
-  "name": "@unravel-tech/ccusage-opencode",
-  "type": "module",
-  "version": "18.2.1",
-  "description": "Usage analysis tool for OpenCode sessions",
-  "contributors": [
-    "ryoppippi",
-    "AnishDe12020"
-  ],
-  "license": "MIT",
-  "funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
-  "homepage": "https://github.com/ryoppippi/ccusage#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ryoppippi/ccusage.git",
-    "directory": "apps/opencode"
-  },
-  "bugs": {
-    "url": "https://github.com/ryoppippi/ccusage/issues"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "bin": {
-    "ccusage-opencode": "./src/index.ts"
-  },
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public",
-    "bin": {
-      "ccusage-opencode": "./dist/index.js"
-    }
-  },
-  "engines": {
-    "node": ">=20.19.4"
-  }
+	"name": "@unravel-tech/ccusage-opencode",
+	"version": "18.2.2",
+	"description": "Usage analysis tool for OpenCode sessions",
+	"homepage": "https://github.com/ryoppippi/ccusage#readme",
+	"bugs": {
+		"url": "https://github.com/ryoppippi/ccusage/issues"
+	},
+	"license": "MIT",
+	"contributors": [
+		"ryoppippi",
+		"AnishDe12020"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ryoppippi/ccusage.git",
+		"directory": "apps/opencode"
+	},
+	"funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
+	"bin": {
+		"ccusage-opencode": "./src/index.ts"
+	},
+	"files": [
+		"dist"
+	],
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"publishConfig": {
+		"access": "public",
+		"bin": {
+			"ccusage-opencode": "./dist/index.js"
+		}
+	},
+	"engines": {
+		"node": ">=20.19.4"
+	}
 }

@@ -1,48 +1,48 @@
 {
-  "name": "@unravel-tech/ccusage-pi",
-  "type": "module",
-  "version": "18.2.1",
-  "description": "Pi-agent usage tracking - unified Claude Max usage across Claude Code and pi-agent",
-  "author": "ryoppippi",
-  "contributors": [
-    "nicobailon"
-  ],
-  "license": "MIT",
-  "funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
-  "homepage": "https://github.com/ryoppippi/ccusage#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ryoppippi/ccusage.git",
-    "directory": "apps/pi"
-  },
-  "bugs": {
-    "url": "https://github.com/ryoppippi/ccusage/issues"
-  },
-  "exports": {
-    ".": "./src/index.ts",
-    "./package.json": "./package.json"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "ccusage-pi": "./src/index.ts"
-  },
-  "files": [
-    "README.md",
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public",
-    "bin": {
-      "ccusage-pi": "./dist/index.js"
-    },
-    "exports": {
-      ".": "./dist/index.js",
-      "./package.json": "./package.json"
-    }
-  },
-  "engines": {
-    "node": ">=20.19.4"
-  }
+	"name": "@unravel-tech/ccusage-pi",
+	"version": "18.2.2",
+	"description": "Pi-agent usage tracking - unified Claude Max usage across Claude Code and pi-agent",
+	"homepage": "https://github.com/ryoppippi/ccusage#readme",
+	"bugs": {
+		"url": "https://github.com/ryoppippi/ccusage/issues"
+	},
+	"license": "MIT",
+	"author": "ryoppippi",
+	"contributors": [
+		"nicobailon"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ryoppippi/ccusage.git",
+		"directory": "apps/pi"
+	},
+	"funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
+	"bin": {
+		"ccusage-pi": "./src/index.ts"
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"access": "public",
+		"bin": {
+			"ccusage-pi": "./dist/index.js"
+		},
+		"exports": {
+			".": "./dist/index.js",
+			"./package.json": "./package.json"
+		}
+	},
+	"engines": {
+		"node": ">=20.19.4"
+	}
 }

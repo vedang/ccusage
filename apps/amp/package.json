@@ -1,35 +1,35 @@
 {
-  "name": "@unravel-tech/ccusage-amp",
-  "type": "module",
-  "version": "18.2.1",
-  "description": "Usage analysis tool for Amp CLI sessions",
-  "author": "ryoppippi",
-  "license": "MIT",
-  "funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
-  "homepage": "https://github.com/ryoppippi/ccusage#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ryoppippi/ccusage.git",
-    "directory": "apps/amp"
-  },
-  "bugs": {
-    "url": "https://github.com/ryoppippi/ccusage/issues"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "bin": {
-    "ccusage-amp": "./src/index.ts"
-  },
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public",
-    "bin": {
-      "ccusage-amp": "./dist/index.js"
-    }
-  },
-  "engines": {
-    "node": ">=20.19.4"
-  }
+	"name": "@unravel-tech/ccusage-amp",
+	"version": "18.2.2",
+	"description": "Usage analysis tool for Amp CLI sessions",
+	"homepage": "https://github.com/ryoppippi/ccusage#readme",
+	"bugs": {
+		"url": "https://github.com/ryoppippi/ccusage/issues"
+	},
+	"license": "MIT",
+	"author": "ryoppippi",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ryoppippi/ccusage.git",
+		"directory": "apps/amp"
+	},
+	"funding": "https://github.com/ryoppippi/ccusage?sponsor=1",
+	"bin": {
+		"ccusage-amp": "./src/index.ts"
+	},
+	"files": [
+		"dist"
+	],
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"publishConfig": {
+		"access": "public",
+		"bin": {
+			"ccusage-amp": "./dist/index.js"
+		}
+	},
+	"engines": {
+		"node": ">=20.19.4"
+	}
 }
